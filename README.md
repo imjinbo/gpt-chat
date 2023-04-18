@@ -29,6 +29,8 @@ yarn
 yarn build
 ```
 
+配置代理域名和初始化api-key均需要在 ./src/config/config.ts 进行更换
+
 打包后则可在 `dist` 文件夹看到打包后的文件，直接丢到服务器即可访问
 
 <!-- [node api tools: 基于 Node 的常用 API 开放](https://gitee.com/n0ts/node-api-tools) -->

@@ -219,7 +219,7 @@
             messages.unshift(cacheSystemClient);
         }
 
-        fetch("https://api-gpt.mvtchat.com/v1/chat/completions", {
+        fetch(config.proxyHttp + "/v1/chat/completions", {
             method: "POST",
             body: JSON.stringify({
                 // frequency_penalty: 0,
@@ -266,18 +266,10 @@
 
                     if (decodeContent.includes('"finish_reason":"stop"')) {
                         loading.value = false;
-                        const client =
-                            clients[clientsIndex.value].contents[
-                                clients[clientsIndex.value].contents.length - 1
-                            ];
-                        // client.tokens = await computedToken(client.content);
-
-                        // clients[clientsIndex.value].contents.push();
 
                         await nextTick();
                         hljsInit();
                         viewer.update();
-                        // return;
                     }
 
                     decodeContent
