@@ -7,7 +7,7 @@
  */
 
 export default {
-    key: "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",
+    key: "",
     data: {
         model: "gpt-3.5-turbo"
         // model: "text-davinci-002"
