@@ -3,7 +3,7 @@
  * @Date: 2023-03-07 17:15:32
  * @Description: 缓存配置操作
  * @FilePath: /chat-gpt/src/utils/cacheUtil.ts
- * @Mail：mail@n0ts.cn
+ * @Mail：mail@n0ts.top
  */
 
 import config from "@/config/config";

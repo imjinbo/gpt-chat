@@ -3,15 +3,15 @@
  * @Date: 2023-03-02 15:53:15
  * @Description: ChatGPT
  * @FilePath: /chat-gpt/src/App.vue
- * @Mail：mail@n0ts.cn
+ * @Mail：mail@n0ts.top
 -->
 <template>
-    <div id="chatgpt">
-        <div id="sidebar" :class="{ sideBarShow: sideBarShow }">
+    <div id="chatgpt" :class="{ print: exportLoading }">
+        <div id="sidebar" v-if="!exportLoading" :class="{ sideBarShow: sideBarShow }">
             <div class="btns">
-                <div class="btn" @click="newClient">➕新建会话</div>
+                <div class="btn" @click="newClient">➕ 新建会话</div>
             </div>
-            <div id="chats">
+            <div id="chats" v-if="!exportLoading">
                 <div v-for="(item, index) in clients" :key="index" @click="clientsIndex = index" :class="{ active: clientsIndex == index }">
                     <p>{{ item.name }}</p>
                     <span @click.stop="removeClient(index)">🗑 删除</span>
@@ -25,7 +25,7 @@
                     : "🌛 亮色模式"
                     }}
                 </div>
-                <div class="btn" @click="settingShow = true">🎡打开配置</div>
+                <div class="btn" @click="settingShow = true">🎡 打开配置</div>
                 <div class="btn" @click="reloadConfig">🎆重置配置</div>
                 <div class="money" v-if="moneyData">
                     余额：{{
@@ -38,7 +38,7 @@
         </div>
         <div id="main">
             <!-- <div id="title">{{ clients[clientsIndex].name }}</div> -->
-            <div id="messages" v-if="clients[clientsIndex]">
+            <div id="messages" :class="{ print: exportLoading }" v-if="clients[clientsIndex]">
                 <div v-for="(item, index) in clients[clientsIndex].contents" :key="index" :class="item.role == 'user' ? 'right' : 'left'">
                     <div class="img">
                         <div v-if="item.role == 'system'" class="system">SY</div>
@@ -55,14 +55,30 @@
                         }"
                         v-html="item.content"
                     ></div>
-                    <!-- <span v-html="item.content"></span> -->
                     <!-- <div class="tokens">
-                        tokens：{{ item.tokens == 0 ? "..." : item.tokens }}
+              tokens：{{ item.tokens == 0 ? "..." : item.tokens }}
                     </div>-->
                 </div>
-                <div id="stretch"></div>
+                <div id="stretch" v-if="!exportLoading"></div>
             </div>
             <div v-else id="home">
+                <!-- <div>
+                    <p>🤪 ChatGPT 基于 gpt-3.5-turbo 开发</p>
+                    <div class="content">
+                        <p>本项目纯前端自娱自乐，数据仅在 localStorage 中读取</p>
+                        <p>国内随意访问，解决 api 无法访问问题</p>
+                        <p>由于使用了海外代理服务器，所以偶尔会出现响应速度慢或者无法响应的问题</p>
+                        <p>瞎写一通，功能简单所以代码较臭</p>
+                        <p>
+                            开源地址（求 star）：
+                            <a href="https://gitee.com/n0ts/chat-gpt" target="_blank">Gitee</a>
+                        </p>
+                        <p>
+                            技术交流：
+                            <a href="https://jq.qq.com/?_wv=1027&k=Mh7ah6Dd">坚果小栈</a>
+                        </p>
+                    </div>
+                </div>-->
                 <div>
                     <p>🙂千禧GPT使用规范，恳请大家遵守</p>
                     <div class="content-text">
@@ -78,10 +94,13 @@
                     </div>
                 </div>
             </div>
-            <div id="input">
+            <div id="input" v-if="!exportLoading">
                 <div class="stop" :class="{ stopShow: loading }" @click="stopMessage">停止回复 🛑</div>
                 <!-- <p>tokens 总和：{{ tokensCountNum }}</p> -->
-                <textarea v-model="message" @keydown="keydown" @keyup="keyup" :style="{ height: textareaHeight + 'px' }"></textarea>
+                <div class="textarea">
+                    <textarea v-model="message" @keydown="keydown" @keyup="keyup" :style="{ height: textareaHeight + 'px' }"></textarea>
+                    <div class="btn" @click="exportPdf">PDF</div>
+                </div>
             </div>
         </div>
     </div>
@@ -89,10 +108,10 @@
     <DialogCom title="输入 key" :show="okKeyDialog">
         <template #center>
             <p>请在下方输入你的 key</p>
-            <p>
+            <!-- <p>
                 申请地址：
                 <a href="https://platform.openai.com/account/api-keys" target="_blank">点我</a>
-            </p>
+            </p>-->
             <input v-model="confirmKey" @keydown.enter="okKey" />
             <p class="tips">key 会保存在本地浏览器(localStorage)中，只供本地使用</p>
         </template>
@@ -108,7 +127,7 @@
                     <p>key：</p>
                     <input type="text" v-model="config.key" />
                 </div>
-                <p class="tips">OpenAI 申请的 Key</p>
+                <!-- <p class="tips">OpenAI 申请的 Key</p> -->
                 <div>
                     <p>行为设定：</p>
                     <input type="text" v-model="config.system" />
@@ -118,11 +137,11 @@
                     <br />
                     <span>“你是一直猫，每句话后面加个 喵~”</span>
                     <br />
-                    <!-- <span>又或者</span> -->
-                    <!-- <br />
+                    <span>又或者</span>
+                    <br />
                     <span v-html="
                             '“当你要发送图片时，请使用 markdown，不要用代码块，并且从 Unsplash API 中“https://source.unsplash.com/960x640/?<关键词>” 获取”'
-                    "></span>-->
+                        "></span>
                 </p>
             </div>
         </template>
@@ -134,7 +153,7 @@
 </template>
 
 <script setup lang="ts">
-    import { ref, reactive, onMounted, nextTick, watch } from "vue";
+    import { ref, reactive, onMounted, nextTick, watch, withCtx } from "vue";
     import axios from "axios";
     import DialogCom from "@/components/dialogCom.vue";
     import messageUtil from "@/utils/messageUtil";
@@ -145,8 +164,11 @@
     import themeUtil from "@/utils/themeUtil";
     import cacheUtil from "@/utils/cacheUtil";
     import MarkdownIt from "markdown-it";
+    import mk from "@iktakahiro/markdown-it-katex";
+    import pdfUtil from "@/utils/pdf";
 
     const md = new MarkdownIt();
+    md.use(mk);
 
     const { config, read, save } = cacheUtil;
 
@@ -167,14 +189,16 @@
         themeUtil.load();
 
         if (config.key) {
-            // getMoeny();
+            // getMoney();
         }
+        // newBing();
     });
 
     /**
      * 确认 key
      */
     const confirmKey = ref("");
+
     function okKey() {
         if (confirmKey.value == "") {
             return messageUtil({
@@ -193,7 +217,7 @@
             content: "key 存储成功，开始提问吧"
         });
 
-        // getMoeny();
+        // getMoney();
     }
 
     // 是否正在加载
@@ -222,15 +246,8 @@
         fetch(config.proxyHttp + "/v1/chat/completions", {
             method: "POST",
             body: JSON.stringify({
-                // frequency_penalty: 0,
-                // max_tokens: 2048,
-                // model: "text-davinci-003",
-                // presence_penalty: 0,
-                // temperature: 1,
-                // top_p: 1,
-                // prompt: messages.filter((t) => t.role === "user").at(-1).stream
-
                 // key: config.key,
+                stream: true,
                 model: config.data.model,
                 messages: messages.map((item) => {
                     // HACK 过滤掉前几个聊天会话
@@ -243,7 +260,7 @@
             }),
             headers: {
                 "Content-Type": "application/json",
-                authorization: `Bearer ${config.key}`
+                Authorization: `Bearer ${config.key}`
             }
         })
             .then((res: any) => {
@@ -264,12 +281,20 @@
                         return errorHandle(decodeContent);
                     }
 
-                    if (decodeContent.includes('"finish_reason":"stop"')) {
+                    // done
+                    if (decodeContent.includes("data: [DONE]")) {
                         loading.value = false;
+                        const client =
+                            clients[clientsIndex.value].contents[
+                                clients[clientsIndex.value].contents.length - 1
+                            ];
+                        client.tokens = await computedToken(client.content);
 
+                        saveMessage();
                         await nextTick();
                         hljsInit();
                         viewer.update();
+                        return;
                     }
 
                     decodeContent
@@ -278,24 +303,20 @@
                         .filter(Boolean)
                         .forEach(async (item: string) => {
                             const itemObj = JSON.parse(item);
-                            if (!itemObj.choices[0].message.content) {
+                            if (!itemObj.choices[0].delta.content) {
                                 return;
                             }
 
-                            const str = itemObj.choices[0].message.content;
+                            const str = itemObj.choices[0].delta.content;
 
                             streamCache += str;
 
                             clients[clientsIndex.value].contents[
                                 clients[clientsIndex.value].contents.length - 1
-                            ].content = streamCache.includes("```")
-                                ? md.render(streamCache)
-                                : streamCache;
+                            ].content = md.render(streamCache);
                             clients[clientsIndex.value].contents[
                                 clients[clientsIndex.value].contents.length - 1
                             ].stream = streamCache;
-
-                            saveMessage();
                             await nextTick();
                             hljsInit();
                         });
@@ -304,6 +325,15 @@
                 });
             })
             .catch(() => {
+                clients[clientsIndex.value].contents[
+                    clients[clientsIndex.value].contents.length - 1
+                ].content =
+                    "<p>发起网络请求失败，服务器可能正在维护中，请稍后重试</p>";
+                messageUtil({
+                    type: "danger",
+                    content: "发起网络请求失败，请稍后重试"
+                });
+                saveMessage();
                 loading.value = false;
             });
     }
@@ -324,7 +354,7 @@
             stream: resultContent
         };
         clients[clientsIndex.value].contents.push(contentData);
-        // contentData.tokens = await computedToken(contentData.stream);
+        contentData.tokens = await computedToken(contentData.stream);
         saveMessage();
         await nextTick();
         hljsInit();
@@ -382,7 +412,7 @@
             });
             clients[clientsIndex.value].name =
                 cacheName + (num == 1 ? "" : ` #${num}`);
-            document.title = cacheName + " | MvtChat";
+            document.title = cacheName + " | ChatGPT";
         }
 
         // 清空输入框
@@ -395,6 +425,7 @@
      * 滚动到底部
      */
     let scrollLock = false;
+
     function scrollToBottom() {
         if (scrollLock) {
             return;
@@ -471,12 +502,14 @@
         tokens: number;
         stream: string;
     }
+
     // 回话列表
     interface IClient {
         name: string;
         contents: Array<IMessage>;
         exceedTokens: number;
     }
+
     const cacheClients = window.localStorage.getItem("message-data");
     const clients: Array<IClient> = reactive(
         cacheClients ? JSON.parse(cacheClients) : []
@@ -488,7 +521,7 @@
         () => clientsIndex.value,
         async () => {
             if (clients[clientsIndex.value]) {
-                document.title = clients[clientsIndex.value].name + " | MvtChat";
+                document.title = clients[clientsIndex.value].name + " | 🤪ChatGPT";
                 await nextTick();
                 tokensCount();
                 hljsInit();
@@ -523,7 +556,7 @@
      */
     function removeClient(i: number) {
         // 删除会话
-        document.title = "MvtChat";
+        document.title = "🤪ChatGPT";
         clients.splice(i, 1);
         clientsIndex.value = -1;
         saveMessage();
@@ -597,6 +630,7 @@
 
     // 设置显示
     const settingShow = ref(false);
+
     /**
      * 确认设定
      */
@@ -613,10 +647,11 @@
      * 获取余额
      */
     const moneyData: any = ref(null);
-    async function getMoeny() {
+
+    async function getMoney() {
         const { data } = await axios({
             method: "post",
-            url: "https://node.fatshady.cn/cors",
+            url: config.proxyHttp + "/quotas",
             data: {
                 method: "GET",
                 url: "https://api.openai.com/dashboard/billing/credit_grants",
@@ -671,26 +706,28 @@
      * token 计算
      */
     async function computedToken(content: string) {
-        if (!content) {
-            return 0;
-        }
-        const { data } = await axios({
-            method: "GET",
-            url: "https://node.fatshady.cn/chatgpt/encoder",
-            params: {
-                content
-            }
-        });
-        if (data.status == 400) {
-            return 0;
-        }
-        return data.data.tokens / 2;
+        return 0;
+        // if (!content) {
+        //     return 0;
+        // }
+        // const { data } = await axios({
+        //     method: "GET",
+        //     url: "https://api.n0ts.top/chatgpt/encoder",
+        //     params: {
+        //         content
+        //     }
+        // });
+        // if (data.status == 400) {
+        //     return 0;
+        // }
+        // return data.data.tokens / 2;
     }
 
     /**
      * tokens 总和
      */
     const tokensCountNum = ref(0);
+
     function tokensCount() {
         if (!clients[clientsIndex.value]) {
             return;
@@ -706,11 +743,107 @@
      * 暂停会话
      */
     function stopMessage() {
-        clients[clientsIndex.value].contents.splice(
-            clients[clientsIndex.value].contents.length - 1,
-            1
-        );
         loading.value = false;
+    }
+
+    /**
+     * 导出 pdf
+     */
+    const exportLoading = ref(false);
+    async function exportPdf() {
+        exportLoading.value = true;
+        await nextTick();
+        await pdfUtil(
+            "ChatGPT 对话导出 | " +
+                new Date().toLocaleDateString().replaceAll("/", "-").toString(),
+            "#main"
+        );
+        messageUtil({
+            type: "success",
+            content: "正在导出中，耐心稍等一会~"
+        });
+        exportLoading.value = false;
+    }
+
+    async function newBing() {
+        const a = "\x1E";
+
+        let { data: ids } = await axios.get("https://api.n0ts.top/bing/new");
+        ids = ids.data;
+
+        const ws = new WebSocket("wss://sydney.bing.com/sydney/ChatHub");
+
+        const result: any = [];
+
+        ws.onopen = () => {
+            console.log("ws open");
+            ws.send(JSON.stringify({ protocol: "json", version: 1 }) + a);
+            ws.send(JSON.stringify({ type: 6 }) + a);
+            ws.send(
+                JSON.stringify({
+                    arguments: [
+                        {
+                            source: "cib",
+                            allowedMessageTypes: [
+                                "Chat",
+                                "InternalSearchQuery",
+                                "InternalSearchResult",
+                                "Disengaged",
+                                "InternalLoaderMessage",
+                                "RenderCardRequest",
+                                "AdsQuery",
+                                "SemanticSerp",
+                                "GenerateContentQuery",
+                                "SearchQuery"
+                            ],
+                            isStartOfSession: true,
+                            verbosity: "verbose",
+                            message: {
+                                locale: "zh-CN",
+                                market: "zh-CN",
+                                region: "US",
+                                author: "user",
+                                inputMethod: "Keyboard",
+                                text: "你好呀",
+                                messageType: "Chat"
+                            },
+                            conversationSignature: ids.conversationSignature,
+                            participant: {
+                                id: ids.clientId
+                            },
+                            conversationId: ids.conversationId
+                        }
+                    ],
+                    invocationId: "1",
+                    target: "chat",
+                    type: 4
+                }) + a
+            );
+        };
+
+        ws.onmessage = (e: MessageEvent) => {
+            // type：1 消息
+            e.data
+                .split(a)
+                .filter(Boolean)
+                .forEach((str: any) => {
+                    const r = JSON.parse(str);
+                    result.push(r);
+                    try {
+                        if (r.arguments[0].messages[0].text) {
+                            console.log(r.type, r.arguments[0].messages[0].text);
+                        } else {
+                            console.log(r.arguments[0].messages[0]);
+                        }
+                    } catch {
+                        console.log(r);
+                    }
+                });
+        };
+
+        ws.onclose = () => {
+            console.log("ws close");
+        };
     }
 </script>
 
@@ -762,9 +895,6 @@
             #chats {
                 overflow-y: scroll;
                 height: 100%;
-                // background: url("../src/assets/logo.png") no-repeat;
-                background-size: 27px;
-                background-position: 50%;
 
                 &::-webkit-scrollbar {
                     width: 10px;
@@ -866,6 +996,7 @@
             position: relative;
             display: flex;
             flex-direction: column;
+            background-color: var(--background-color-1);
 
             #input {
                 position: absolute;
@@ -880,42 +1011,64 @@
                     transparent,
                     var(--background-color-2) 40%
                 );
-                padding-top: 20px;
+                padding-top: 50px;
                 box-sizing: border-box;
 
-                textarea {
+                .textarea {
                     position: absolute;
                     left: 50%;
                     bottom: 30%;
                     transform: translateX(-50%);
                     width: 80%;
-                    border-radius: 6px;
-                    border: 1px solid var(--background-color-1);
-                    background: var(--background-color-1);
-                    outline: none;
-                    resize: none;
-                    padding: 15px 20px;
-                    color: var(--text-color);
-                    max-height: 150px;
-                    overflow-y: auto;
-                    box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
-                    font-size: 1rem;
+                    display: flex;
+                    justify-content: space-between;
+                    align-items: center;
 
-                    &::-webkit-scrollbar {
-                        width: 8px;
-                        height: 1px;
+                    textarea {
+                        width: 90%;
+                        border-radius: 6px;
+                        border: 1px solid var(--background-color-1);
+                        background: var(--background-color-1);
+                        outline: none;
+                        resize: none;
+                        padding: 15px 20px;
+                        color: var(--text-color);
+                        max-height: 150px;
+                        overflow-y: auto;
+                        box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+                        font-size: 1rem;
+
+                        &::-webkit-scrollbar {
+                            width: 8px;
+                            height: 1px;
+                        }
+
+                        &::-webkit-scrollbar-thumb {
+                            border-radius: 10px;
+                            box-shadow: none;
+                            background: #565868;
+                        }
+
+                        &::-webkit-scrollbar-track {
+                            box-shadow: none;
+                            border-radius: 10px;
+                            background: transparent;
+                        }
                     }
 
-                    &::-webkit-scrollbar-thumb {
-                        border-radius: 10px;
-                        box-shadow: none;
-                        background: #565868;
-                    }
+                    .btn {
+                        height: 24px;
+                        background-color: #2980b9;
+                        padding: 15px 20px;
+                        border-radius: 6px;
+                        white-space: nowrap;
+                        margin-left: 10px;
+                        cursor: pointer;
+                        color: #fff;
 
-                    &::-webkit-scrollbar-track {
-                        box-shadow: none;
-                        border-radius: 10px;
-                        background: transparent;
+                        &:hover {
+                            background-color: #3498db;
+                        }
                     }
                 }
 
@@ -999,7 +1152,7 @@
                 }
 
                 > div {
-                    padding: 10px 100px;
+                    padding: 25px 100px;
                     display: flex;
                     flex-wrap: nowrap;
                     // border-bottom: 1px solid rgba(0, 0, 0, 0.1);
@@ -1044,12 +1197,9 @@
                 }
 
                 .content {
-                    padding: 10px 20px;
+                    padding: 0 20px;
                     border-radius: 10px;
                     margin: 0 10px;
-                    :deep(p) {
-                        margin: 0 !important;
-                    }
                 }
 
                 :deep(.content) > :not(ol):not(ul):not(pre):last-child:after,
@@ -1078,6 +1228,11 @@
                 }
             }
 
+            .print {
+                height: auto !important;
+                overflow-y: initial !important;
+            }
+
             #home {
                 height: 100%;
                 display: flex;
@@ -1102,6 +1257,11 @@
                 }
             }
         }
+    }
+
+    .print {
+        height: auto !important;
+        overflow-y: initial !important;
     }
 
     @media screen and (max-width: 1200px) {

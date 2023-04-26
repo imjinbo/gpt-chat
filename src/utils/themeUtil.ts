@@ -3,7 +3,7 @@
  * @Date: 2023-03-07 11:43:13
  * @Description: 主题色配置
  * @FilePath: /chat-gpt/src/utils/themeUtil.ts
- * @Mail：mail@n0ts.cn
+ * @Mail：mail@n0ts.top
  */
 
 import { ref } from "vue";

@@ -6,11 +6,13 @@
 
 本项目纯前端自娱自乐，数据仅在 localStorage 中读取
 
-国内随意访问，解决 api 无法访问问题
+<!-- 国内随意访问，解决 api 无法访问问题
 
 瞎写一通，功能简单所以代码较臭
 
-预览：[ChatGPT](https://chatgpt.n0ts.cn/)
+技术交流：[坚果小栈](https://jq.qq.com/?_wv=1027&k=Mh7ah6Dd)
+
+预览：[ChatGPT](https://chatgpt.n0ts.top/) -->
 
 ## 使用
 
@@ -29,8 +31,12 @@ yarn
 yarn build
 ```
 
-配置代理域名和初始化api-key均需要在 ./src/config/config.ts 进行更换
-
 打包后则可在 `dist` 文件夹看到打包后的文件，直接丢到服务器即可访问
+<!-- 
+## 采用后端
 
-<!-- [node api tools: 基于 Node 的常用 API 开放](https://gitee.com/n0ts/node-api-tools) -->
+[node api tools: 基于 Node 的常用 API 开放](https://gitee.com/n0ts/node-api-tools)
+
+## QQ 群讨论
+
+[坚果茶馆](https://jq.qq.com/?_wv=1027&k=Mh7ah6Dd) -->

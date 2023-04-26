@@ -3,7 +3,7 @@
  * @Date: 2023-03-02 15:53:15
  * @Description: vue config
  * @FilePath: /chat-gpt/vue.config.js
- * @Mail：mail@n0ts.cn
+ * @Mail：mail@n0ts.top
  */
 
 const { defineConfig } = require("@vue/cli-service");

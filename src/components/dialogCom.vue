@@ -3,7 +3,7 @@
  * @Date: 2023-03-02 21:34:33
  * @Description: dialog
  * @FilePath: /chat-gpt/src/components/dialogCom.vue
- * @Mail：mail@n0ts.cn
+ * @Mail：mail@n0ts.top
 -->
 
 <template>

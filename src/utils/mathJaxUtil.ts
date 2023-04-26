@@ -3,7 +3,7 @@
  * @Date: 2023-03-07 13:03:53
  * @Description: MathJax
  * @FilePath: /chat-gpt/src/utils/mathJaxUtil.ts
- * @Mail：mail@n0ts.cn
+ * @Mail：mail@n0ts.top
  */
 
 let MathJax: any = null;

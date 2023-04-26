@@ -3,7 +3,7 @@
  * @Date: 2023-03-03 08:59:14
  * @Description: messageUtil
  * @FilePath: /chat-gpt/src/utils/messageUtil.ts
- * @Mail：mail@n0ts.cn
+ * @Mail：mail@n0ts.top
  */
 
 interface IType {
