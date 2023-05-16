@@ -99,7 +99,8 @@
                 <!-- <p>tokens 总和：{{ tokensCountNum }}</p> -->
                 <div class="textarea">
                     <textarea v-model="message" @keydown="keydown" @keyup="keyup" :style="{ height: textareaHeight + 'px' }"></textarea>
-                    <div class="btn" @click="exportPdf">PDF</div>
+                    <div class="btn" @click="send">发送</div>
+                    <div class="btn" @click="exportPdf">导出PDF</div>
                 </div>
             </div>
         </div>
@@ -1058,16 +1059,20 @@
 
                     .btn {
                         height: 24px;
-                        background-color: #2980b9;
+                        background-color: #3e5bb1;
                         padding: 15px 20px;
                         border-radius: 6px;
                         white-space: nowrap;
                         margin-left: 10px;
                         cursor: pointer;
                         color: #fff;
+                        border: 1px solid #ffffff00;
 
                         &:hover {
-                            background-color: #3498db;
+                            transition: all 0.4s;
+                            background-color: #fff;
+                            color: #3e5bb1;
+                            border: 1px solid #3e5bb1;
                         }
                     }
                 }
