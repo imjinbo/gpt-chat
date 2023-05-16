@@ -8,7 +8,7 @@
 
 export default {
     proxyHttp: 'https://api-gpt.mvtchat.com',
-    key: "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",
+    key: "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",
     data: {
         model: "gpt-3.5-turbo"
     },

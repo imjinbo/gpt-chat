@@ -83,9 +83,9 @@
                     <p>🙂千禧GPT使用规范，恳请大家遵守</p>
                     <div class="content-text">
                         <ol>
-                            <!-- <li>仅限千禧员工使用，请勿外传</li> -->
                             <li>请遵纪守法，不要输入不好的言语</li>
                             <li>请勿输入涉及到个人隐私的信息，以防泄密</li>
+                            <li>如果Key失效，请清理浏览器缓存后点击左侧的重置配置菜单</li>
                         </ol>
                         <span>
                             如果您有自己的OpenAI API
@@ -136,12 +136,12 @@
                     <span>给 OpenAI 设定一个行为，比如：</span>
                     <br />
                     <span>“你是一直猫，每句话后面加个 喵~”</span>
-                    <br />
+                    <!-- <br />
                     <span>又或者</span>
                     <br />
                     <span v-html="
                             '“当你要发送图片时，请使用 markdown，不要用代码块，并且从 Unsplash API 中“https://source.unsplash.com/960x640/?<关键词>” 获取”'
-                        "></span>
+                    "></span>-->
                 </p>
             </div>
         </template>
