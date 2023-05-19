@@ -7,7 +7,8 @@
  */
 
 export default {
-    proxyHttp: 'https://api-gpt.mvtchat.com',
+    publicDomanHttp: 'http://172.16.22.186:8080/',
+    proxyHttp: 'https://imjinbo-gpt.imjinbo.workers.dev/',
     key: "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",
     data: {
         model: "gpt-3.5-turbo"

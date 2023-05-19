@@ -111,6 +111,12 @@
         </div>
     </div>
 
+    <DialogCom title :show="loginShow" class="login-form-dialog">
+        <template #center>
+            <loginPage @success="loginShow = false"></loginPage>
+        </template>
+    </DialogCom>
+
     <DialogCom title="输入 key" :show="okKeyDialog">
         <template #center>
             <p>请在下方输入你的 key</p>
@@ -162,6 +168,8 @@
     import { ref, reactive, onMounted, nextTick, watch, withCtx } from "vue";
     import axios from "axios";
     import DialogCom from "@/components/dialogCom.vue";
+    import loginPage from "@/components/loginPage.vue";
+
     import messageUtil from "@/utils/messageUtil";
     import hljs from "highlight.js";
     import Clipboard from "clipboard";
@@ -172,8 +180,12 @@
     import MarkdownIt from "markdown-it";
     import mk from "@iktakahiro/markdown-it-katex";
     import pdfUtil from "@/utils/pdf";
+    import configHttp from "@/config/config";
 
     const md = new MarkdownIt();
+    const accessToken = localStorage.getItem("accessToken");
+    let loginShow = true;
+    accessToken && accessToken.length === 10 && (loginShow = false);
     md.use(mk);
 
     const { config, read, save } = cacheUtil;
@@ -237,7 +249,7 @@
     // 获取聊天窗口 dom
     let messageDom: Element | null = null;
     // Viewer
-    let viewer: any = null;
+    let viewer: unknown = null;
 
     onMounted(() => {
         viewer = new Viewer(document.querySelector("#main") as HTMLElement);
@@ -247,6 +259,9 @@
         if (config.key) {
             // getMoney();
         }
+
+        // 判断是否已过期
+        // configHttp
         // newBing();
     });
 
@@ -441,6 +456,20 @@
      * 发送消息
      */
     function send() {
+        const accessToken = sessionStorage.getItem("access-token");
+        if (!loginShow || !accessToken) {
+            const a = "请正";
+            const b = "常";
+            const c = "使用";
+            const d = "，感谢";
+            const e = "您的";
+            const f = "配合";
+
+            return messageUtil({
+                type: "danger",
+                content: a + b + c + d + e + f
+            });
+        }
         if (message.value == "" || message.value.trim() == "" || loading.value) {
             return;
         }
@@ -1418,6 +1447,13 @@
             background-color: #fff;
             color: #3e5bb1;
             border: 1px solid #3e5bb1;
+        }
+    }
+    .login-form-dialog {
+        :deep(#main) {
+            background-color: #e8e8e8 !important;
+            width: 100% !important;
+            height: 100%;
         }
     }
 </style>
