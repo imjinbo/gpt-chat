@@ -98,19 +98,26 @@
                             }
                         })
                             .then((res) => {
-                                const arr = ["已经到期"];
-                                if (arr.some((t) => res.data.includes(t))) {
-                                    state.loading = false;
-
-                                    return messageUtil({
-                                        type: "danger",
-                                        content: res.data
-                                    });
-                                    // emit("success");
-                                    // sessionStorage.setItem("expireTime");
-                                    // setTimeout(methods.handleeLogin, 1000);
-                                } else {
+                                if (res.status == 200) {
+                                    // 在这里设置页面的变量
+                                    // 无用
                                     sessionStorage.setItem("access-token", userId);
+                                    // 首页的提示语
+                                    sessionStorage.setItem(
+                                        "home-prompt",
+                                        res.data.homeMess
+                                    );
+                                    // 使用的key
+                                    sessionStorage.setItem(
+                                        "home-key",
+                                        res.data.key
+                                    );
+                                    // 网站标题
+                                    sessionStorage.setItem(
+                                        "home-title",
+                                        res.data.siteName
+                                    );
+
                                     resolve();
                                 }
                             })

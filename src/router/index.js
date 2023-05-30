@@ -1,6 +1,6 @@
 import contentPage from '../view/contentPage.vue';
 import loginPage from '../view/loginPage.vue';
-import { createRouter, createWebHashHistory } from 'vue-router'
+import { createRouter, createWebHistory } from 'vue-router'
 
 // 静态路由页面
 export const allowRouter = [
@@ -10,7 +10,7 @@ export const allowRouter = [
 ]
 
 const router = createRouter({
-    history: createWebHashHistory(), // createWebHistory
+    history: createWebHistory(), // createWebHistory
     routes: allowRouter
 })
 

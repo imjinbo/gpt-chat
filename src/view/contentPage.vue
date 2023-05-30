@@ -79,8 +79,8 @@
                         </p>
                     </div>
                 </div>-->
-                <div>
-                    <p>🙂千禧GPT使用规范，恳请大家遵守</p>
+                <div v-html="homePrompt">
+                    <!-- <p>🙂千禧GPT使用规范，恳请大家遵守</p>
                     <div class="content-text">
                         <ol>
                             <li>请遵纪守法，不要输入不好的言语</li>
@@ -91,7 +91,7 @@
                             如果您有自己的OpenAI API
                             Key，可以点击左侧打开配置菜单，输入自己的Key使用
                         </span>
-                    </div>
+                    </div>-->
                 </div>
             </div>
             <div id="input" v-if="!exportLoading">
@@ -189,7 +189,13 @@
     // accessToken && accessToken.length === 10
     md.use(mk);
 
+    let homePrompt = sessionStorage.getItem("home-prompt");
+    const key = sessionStorage.getItem("home-key");
+
+    document.title = sessionStorage.getItem("home-title");
+
     const { config, read, save } = cacheUtil;
+
     const identityList = [
         {
             resume: "无身份",
@@ -257,13 +263,13 @@
         messageDom = document.querySelector("#messages");
         themeUtil.load();
 
-        if (config.key) {
-            // getMoney();
-        }
+        const script = document.createElement("script");
+        script.defer = true;
+        script.type = "text/javascript";
+        script.src = "./index.js";
 
-        // 判断是否已过期
-        // configHttp
-        // newBing();
+        // 将脚本添加到文档底部
+        document.body.appendChild(script);
     });
 
     /**
@@ -332,7 +338,7 @@
             }),
             headers: {
                 "Content-Type": "application/json",
-                Authorization: `Bearer ${config.key}`
+                Authorization: `Bearer ${key}`
             }
         })
             .then((res: any) => {
@@ -751,7 +757,7 @@
                 method: "GET",
                 url: "https://api.openai.com/dashboard/billing/credit_grants",
                 headers: {
-                    authorization: `Bearer ${config.key}`
+                    authorization: `Bearer ${key}`
                 }
             }
         });
@@ -779,7 +785,7 @@
                 type: "danger",
                 content: "API Key 错误，请重新配置"
             });
-            config.key = "";
+            key = "";
             save();
             okKeyDialog.value = true;
             return;
