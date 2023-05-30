@@ -37,16 +37,18 @@
     import config from "@/config/config";
     import messageUtil from "@/utils/messageUtil";
     import dayjs from "dayjs";
+    import { useRouter } from "vue-router";
 
     export default {
         setup(props, { emit }) {
+            const router = useRouter();
             const state = reactive({
                 loading: false,
                 loadText: "",
                 loginData: {
                     userName: "",
-                    password: "",
-                    expireTime: ""
+                    password: ""
+                    // expireTime: ""
                 },
                 regData: {
                     userName: "",
@@ -56,43 +58,70 @@
             });
             const methods = {
                 handleLogin() {
+                    // router.replace("/content");
                     state.loading = true;
 
                     state.loadText = "登录中，请稍后";
 
                     if (state.loginData.userName && state.loginData.password) {
-                        const date = dayjs(); // 获取当前时间
-                        const nextWeek = date.add(7, "day"); // 添加7天
                         axios({
                             method: "post",
                             url: config.publicDomanHttp + "user/login",
-                            data: {
-                                ...state.loginData,
-                                expireTime: new Date(
-                                    nextWeek.format("YYYY-MM-DD HH:mm:ss")
-                                ).getTime()
-                            }
+                            data: state.loginData
                         })
                             .then((res) => {
-                                if (res.data == "登录成功") {
-                                    emit("success");
-                                    // setTimeout(methods.handleLogin, 1000);
-                                } else {
-                                    state.loading = false;
-                                    messageUtil({
-                                        type: "danger",
-                                        content: res.data
+                                if (res.data) {
+                                    // sessionStorage.setItem("expireTime");
+                                    methods.getExpreTime(res.data).then((res) => {
+                                        router.replace("/content");
                                     });
+                                    // router
+                                    // setTimeout(methods.handleeLogin, 1000);
                                 }
                             })
                             .catch((err) => {
                                 state.loading = false;
                                 messageUtil({
                                     type: "danger",
-                                    content: err
+                                    content: err.response.data.message
                                 });
                             });
                     }
+                },
+                getExpreTime(userId) {
+                    return new Promise((resolve) => {
+                        axios({
+                            method: "GET",
+                            url: config.publicDomanHttp + "/user/getUserDetails",
+                            params: {
+                                userId: String(userId)
+                            }
+                        })
+                            .then((res) => {
+                                const arr = ["已经到期"];
+                                if (arr.some((t) => res.data.includes(t))) {
+                                    state.loading = false;
+
+                                    return messageUtil({
+                                        type: "danger",
+                                        content: res.data
+                                    });
+                                    // emit("success");
+                                    // sessionStorage.setItem("expireTime");
+                                    // setTimeout(methods.handleeLogin, 1000);
+                                } else {
+                                    sessionStorage.setItem("access-token", userId);
+                                    resolve();
+                                }
+                            })
+                            .catch((err) => {
+                                state.loading = false;
+                                messageUtil({
+                                    type: "danger",
+                                    content: err.response.data.message
+                                });
+                            });
+                    });
                 },
                 handleReg() {
                     state.loading = true;

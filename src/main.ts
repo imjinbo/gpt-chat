@@ -10,7 +10,11 @@ import { createApp } from "vue";
 import "@/assets/css/global.less";
 import "@/assets/css/messageUtil.less";
 import "@/assets/css/markdown.less";
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore
+import router from '@/router/index'
 import App from "./App.vue";
 
 const app = createApp(App);
+app.use(router)
 app.mount("#app");
