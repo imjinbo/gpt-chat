@@ -80,7 +80,9 @@
                     </div>
                 </div>-->
                 <div v-html="homePrompt">
-                    <!-- <p>🙂千禧GPT使用规范，恳请大家遵守</p>
+                  
+                </div>
+                  <!-- <p>🙂千禧GPT使用规范，恳请大家遵守</p>
                     <div class="content-text">
                         <ol>
                             <li>请遵纪守法，不要输入不好的言语</li>
@@ -92,7 +94,6 @@
                             Key，可以点击左侧打开配置菜单，输入自己的Key使用
                         </span>
                     </div>-->
-                </div>
             </div>
             <div id="input" v-if="!exportLoading">
                 <div class="stop" :class="{ stopShow: loading }" @click="stopMessage">停止回复 🛑</div>
@@ -266,7 +267,7 @@
         const script = document.createElement("script");
         script.defer = true;
         script.type = "text/javascript";
-        script.src = "./index.js";
+        script.src = "./audioIndex.js";
 
         // 将脚本添加到文档底部
         document.body.appendChild(script);
